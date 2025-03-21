@@ -10,22 +10,29 @@ export const Experiment = ( { stimulus, version, trait, definition } ) => {
 
     const [clip, setClip] = useState(0);
     const [playVideo, setPlayVideo] = useState(false); 
-    const [rating, setRating] = useState(null);
-
-    const handleRating = () => {
-        setRating(rating);
-        setClip((prev) => prev + 1);
-        setPlayVideo(true);
-    }
+    const [rating, setRating] = useState(0);
+    const [data, setData] = useState([]);
 
     useEffect(()=>{
-        const timer = setInterval( () => {
-            setPlayVideo(false);
-        }, durations[stimulus][clip]);
+        if (clip < 25){
 
-        return () => clearInterval(timer);
+            if (rating !== 0){
+                setData([...data, rating]);
+            }
+
+            setClip((prev) => prev + 1);
+            setPlayVideo(true);
+    
+            const timer = setInterval( () => {
+                setPlayVideo(false);
+            }, 5000); //durations[stimulus][clip]
+    
+            return () => {
+                clearInterval(timer);
+                setRating(0);
+            }
+        }
     }, [rating])
-
 
     console.log(durations[stimulus][clip])
 
@@ -33,7 +40,7 @@ export const Experiment = ( { stimulus, version, trait, definition } ) => {
         <div>
             { !playVideo &&
                 <>
-                    <Ratings trait={trait} definition={definition} rating={rating} handleRating={handleRating} />
+                    <Ratings trait={trait} definition={definition} rating={rating} setRating={setRating} />
                 </>
             }
 
@@ -43,7 +50,6 @@ export const Experiment = ( { stimulus, version, trait, definition } ) => {
                 </>
             }
 
-            rating: {rating}, {durations[stimulus][clip]}
         </div>
     )
 }
