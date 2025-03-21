@@ -1,74 +1,49 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "motion/react"
+import React, { useState, useEffect, useRef} from "react";
+import { Ratings } from "./ratings";
 
-export const Experiment = ( { pageEvent, stimulus, trait, definition } ) => {
-
-    const [position, setPosition] = useState(0);
-    const [rating, setRating] = useState(30);
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setPosition((prev) => (prev >= 400 ? 0 : prev + 40));
-      }, 1000);
-  
-      return () => clearInterval(interval);
-    }, []);
-
-    // KEYDOWN LISTENER
-    // this works, and changes the position of the line on the chart. 
-    useEffect(() => {
-
-      const handleKeyPress = (event) => {
-        if (event.key === "ArrowUp") {
-          setRating((prev) => prev + 10); // Move right
-        } else if (event.key === "ArrowDown") {
-          setRating((prev) => prev - 20); // Move left
-        }
-      };
-
-      window.addEventListener("keyup", handleKeyPress);
-      window.addEventListener("keydown", handleKeyPress);
+export const Experiment = ( { stimulus, version, trait, definition } ) => {
     
-      return () => {
-        window.removeEventListener("keyup", handleKeyPress);
-        window.removeEventListener("keydown", handleKeyPress);
-      };
+    const durations = {
+        "physical": [148000,2000,27000,10000,59000,8000,19000,6000,19000,7000,68000,37000,22000,5000,4000,6000,42000,3000,7000,7000,5000,1000,68000,2000,16000],
+        "stutterer": [28000,3000,133000,11000,2000,20000,146000,20000,25000,16000,21000,6000,11000,1000,10000,14000,41000,6000,32000,14000,40000,60000,3000,32000],
+    }
 
-    }, []);
+    const [clip, setClip] = useState(0);
+    const [playVideo, setPlayVideo] = useState(false); 
+    const [rating, setRating] = useState(null);
+
+    const handleRating = () => {
+        setRating(rating);
+        setClip((prev) => prev + 1);
+        setPlayVideo(true);
+    }
+
+    useEffect(()=>{
+        const timer = setInterval( () => {
+            setPlayVideo(false);
+        }, durations[stimulus][clip]);
+
+        return () => clearInterval(timer);
+    }, [rating])
+
+
+    console.log(durations[stimulus][clip])
 
     return (
-        <>
-          <video src={stimulus} width={300} height={200} autoPlay controls='' type="video/mp4" />
-          
-          <p>a lot</p>
+        <div>
+            { !playVideo &&
+                <>
+                    <Ratings trait={trait} definition={definition} rating={rating} handleRating={handleRating} />
+                </>
+            }
 
-            <div style={{ 
-                position: "relative", 
-                width: "400px", 
-                height: "80px", 
-                background: "#f3f4f6", 
-                border: "1px solid #ccc", 
-                overflow: "hidden" }}>
+            { playVideo &&
+                <>
+                    <video src={`https://firebasestorage.googleapis.com/v0/b/inarr-99f89.firebasestorage.app/o/${stimulus}-v${version}_clip_${clip}.mp4?alt=media&token=672387bd-9d5b-4813-99ef-afaba3492b94`} autoPlay />
+                </>
+            }
 
-            <motion.div
-                style={{
-                    position: "absolute",
-                    top: rating,// increasing this makes the line go lower
-                    transform: "translateY(-50%)",
-                    height: "3px", // thickness
-                    background: "blue",
-                    width: "200px",
-                }}
-                initial={{ x: 0 }}
-                animate={{ x: position }}
-                transition={{ duration: 1, ease: "linear" }}
-                />
-            </div>
-
-          <p>not so much</p>
-          <strong>{trait}</strong> <br/>
-          <em>{definition}</em> <br/>
-          <p>Your current rating: <strong>{rating}</strong></p>
-        </>
+            rating: {rating}, {durations[stimulus][clip]}
+        </div>
     )
 }
