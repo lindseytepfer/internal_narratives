@@ -1,7 +1,9 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
+import { Consent } from './components/consent';
 import { Instructions } from "./components/instructions";
 import { Experiment } from "./components/experiment";
+import { Demographics } from "./components/demographics";
 import { Completion } from "./components/completion";
 
 const App = () => {
@@ -40,17 +42,20 @@ const App = () => {
         setTrait(selectTrait(traitDict))
     }, [])
 
-    console.log(String(stimulus))
     return (
         <div className="App">
             {(() => {
                 switch (pageState) {
                 case 0:
-                    return <Instructions pageEvent={nextPage} />
+                    return <Consent pageEvent={nextPage} />
                 case 1:
+                    return <Instructions pageEvent={nextPage} trait={trait} definition={traitDict[trait]} />
+                case 2:
                     return <Experiment pageEvent={nextPage} stimulus={stimulus} version={version} trait={trait} definition={traitDict[trait]} />; 
-                    // case 2:
-                    //     return <Completion pageEvent={nextPage} />;
+                case 3:
+                    return <Demographics pageEvent={nextPage} />
+                case 4:
+                    return <Completion pageEvent={nextPage} />;
                 default:
                     return null;
                 }
