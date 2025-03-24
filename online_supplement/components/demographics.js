@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../config/firebase.js"
 import { addDoc, collection } from 'firebase/firestore';
+import { v4 as uuid } from 'uuid';
 import { RadioGroup, FormControl, FormLabel, FormControlLabel, Radio, FormGroup, Checkbox } from "@mui/material";
 
-export const Demographics = ( { pageEvent } ) => {
+export const Demographics = ( { pageEvent, data, stimulus, version, trait } ) => {
+    const [subID, setSubID] = useState(0);
+
+    const [seen, setSeen] = useState(0)
     const [age, setAge] = useState(0)
     const [sex, setSex] = useState(0)
     const [gender, setGender] = useState(0)
@@ -13,6 +17,15 @@ export const Demographics = ( { pageEvent } ) => {
 
     const [completed, setCompleted] = useState(0)
     const [alert, setAlert] = useState(false)
+
+    const handleSubID = () => {
+        const x = uuid();
+        setSubID(x);
+      }
+
+    useEffect(()=>{
+        handleSubID();
+    },[])
 
     useEffect(()=>{
         if (age && sex && gender && ethnic && race && edu !== 0) {
@@ -36,10 +49,54 @@ export const Demographics = ( { pageEvent } ) => {
     
     }, [age])
 
+    //cloud research paramters
+    const queryParameters = new URLSearchParams(window.location.search)
+    const participantID = queryParameters.get("participantId")
+    const assignmentID = queryParameters.get("assignmentId")
+    const projectID = queryParameters.get("projectId")
+
+    const dataCollectionRef = collection(db, "responses")
+
+    const sendData = async () => {
+        try {
+            await addDoc(dataCollectionRef, {
+                userID: subID,
+                connectID: participantID,
+                assignmentID: assignmentID,
+                projectID: projectID,
+                movie: stimulus,
+                version: version,
+                trait: trait,
+                ratings: data,
+                seen: seen,
+                age: age,
+                sex: sex,
+                gender: gender,
+                ethnic: ethnic,
+                race: race,
+                edu: edu,
+        });
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    const handleComplete = () => {
+        sendData();
+        pageEvent();
+    }
+
     return(
         <>
         <h1>Demographics Survey</h1>
         <div className="demo-survey">
+            <FormControl id="demo-align">
+                    <FormLabel id="demo-radio-buttons-group-label">First, have you ever seen the video used in this study before?</FormLabel>
+                        <RadioGroup id="demographics-id" className="radio-group" aria-labelledby="demo-radio-buttons-group-label" value={seen} onChange={e => setSeen(e.target.value)} >
+                            <FormControlLabel value="1" label="Yes" control={<Radio />} labelPlacement='right'/>
+                            <FormControlLabel value="2" label="No" control={<Radio />} labelPlacement='right'/>
+                        </RadioGroup>
+            </FormControl>
 
             <FormGroup id="demo-align">
                 <FormLabel id="demo-radio-buttons-group-label">Please indicate your age:</FormLabel>
@@ -115,7 +172,7 @@ export const Demographics = ( { pageEvent } ) => {
 
             { completed === 1 && !alert && 
                 <>
-                    <button className="advance-button" onClick={pageEvent}>submit</button>
+                    <button className="advance-button" onClick={handleComplete}>complete study</button>
                 </>
             }
             </div>
