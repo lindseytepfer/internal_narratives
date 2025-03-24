@@ -12,6 +12,8 @@ const App = () => {
     const [version, setVersion] = useState(null);
     const [trait, setTrait] = useState(null);
 
+    const [data, setData] = useState([]);
+
     const nextPage = () => setPageState((prev) => prev + 1);
 
     function selectStimulus(array) {
@@ -51,9 +53,9 @@ const App = () => {
                 case 1:
                     return <Instructions pageEvent={nextPage} trait={trait} definition={traitDict[trait]} />
                 case 2:
-                    return <Experiment pageEvent={nextPage} stimulus={stimulus} version={version} trait={trait} definition={traitDict[trait]} />; 
+                    return <Experiment pageEvent={nextPage} stimulus={stimulus} version={version} trait={trait} definition={traitDict[trait]} data={data} setData={setData}/>; 
                 case 3:
-                    return <Demographics pageEvent={nextPage} />
+                    return <Demographics pageEvent={nextPage} data={data} stimulus={stimulus} version={version} trait={trait} />
                 case 4:
                     return <Completion pageEvent={nextPage} />;
                 default:
