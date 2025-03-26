@@ -26,6 +26,7 @@ export const Video = ( { stimulus, version, clip } ) => {
               ref={videoRef}
               autoPlay
               playsInline
+              disablePictureInPicture
               width="640"
               height="360"
               style={{ 
