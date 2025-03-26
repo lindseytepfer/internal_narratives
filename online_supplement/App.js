@@ -31,12 +31,12 @@ const App = () => {
     const movielist = ["physical","stutterer"]
     const versionlist = ["1", "2"]
     
-    const traitDict = {'bossy': 'a person who likes giving people orders and wants things their own way.',
-            'easygoing': 'a person who is relaxed, tolerant, and not prone to rigid rules or bouts of temper.',
-            'nosy': 'a person who is overly curious about other people\'s business.',
-            'conscientious': 'a person who does their work or duty thoroughly and responsibly.',
-            'rebellious': 'a person who resists authority, control, or convention and wants to have their own way.',
-            'humble': 'a person who is modest and does not boast.'}
+    const traitDict = {'Bossy': 'a person who likes giving people orders and wants things their own way.',
+            'Easygoing': 'a person who is relaxed, tolerant, and not prone to rigid rules or bouts of temper.',
+            'Nosy': 'a person who is overly curious about other people\'s business.',
+            'Conscientious': 'a person who does their work or duty thoroughly and responsibly.',
+            'Rebellious': 'a person who resists authority, control, or convention and wants to have their own way.',
+            'Humble': ' person who is modest and does not boast.'}
 
     useEffect( () => {
         setStimulus(selectStimulus(movielist));
