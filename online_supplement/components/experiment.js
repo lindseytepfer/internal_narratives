@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef} from "react";
 import { Ratings } from "./ratings";
+import { Video } from "./video";
 
 export const Experiment = ( { pageEvent, stimulus, version, trait, definition, data, setData } ) => {
     
     const durations = {
-        "physical": [148000,2000,27000,10000,59000,8000,19000,6000,19000,7000,68000,37000,22000,5000,4000,6000,42000,3000,7000,7000,5000,1000,68000,2000,16000],
-        "stutterer": [28000,3000,133000,11000,2000,20000,146000,20000,25000,16000,21000,6000,11000,1000,10000,14000,41000,6000,32000,14000,40000,60000,3000,32000],
+        "physical": [149000,4000,27000,12000,58000,11000,19000,8000,18000,10000,67000,40000,23000,7000,4000,8000,42000,5000,7000,9000,5000,3000,68000,7000,14000],
+        "stutterer": [29000,5000,133000,13000,2000,22000,146000,22000,24000,19000,21000,7000,11000,4000,9000,18000,40000,8000,32000,16000,39000,63000,3000,34000,45000],
     }
 
     const [clip, setClip] = useState(0);
@@ -37,30 +38,26 @@ export const Experiment = ( { pageEvent, stimulus, version, trait, definition, d
     }, [playVideo])
 
     useEffect(()=>{
-        if (clip === 25){
+        if (clip === 26){
             pageEvent();
         }
 
     }, [clip])
 
-
     console.log("clip:", clip)
 
     return (
         <div>
+            <progress value={clip+1} max={25}/>
             { !playVideo &&
                 <>
                     <Ratings stimulus={stimulus} trait={trait} definition={definition} rating={rating} setRating={setRating} />
-                    <p id="progress-id">progress: {clip+1}/{25}</p>
                 </>
             }
 
             { playVideo &&
-                <>
-                    <video 
-                        src={`https://firebasestorage.googleapis.com/v0/b/inarr-99f89.firebasestorage.app/o/${stimulus}-v${version}_clip_${clip}.mp4?alt=media`} 
-                        autoPlay 
-                        controls=''> Unable to load video. </video>
+                <> 
+                    <Video stimulus={stimulus} version={version} clip={clip} />
                 </>
             }
 

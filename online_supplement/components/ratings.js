@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { RadioGroup, FormControl, FormLabel, FormControlLabel, Radio } from "@mui/material";
 
 export const Ratings = ( { stimulus, trait, definition, rating, setRating } ) => {
@@ -6,7 +6,7 @@ export const Ratings = ( { stimulus, trait, definition, rating, setRating } ) =>
     return(
         <div className="container">
             <FormControl>
-                <img width="640" height="360" src={`https://firebasestorage.googleapis.com/v0/b/inarr-99f89.firebasestorage.app/o/${stimulus}.png?alt=media&token=e78401f1-1770-4a03-af8b-527659666f7f`} />
+                <img src={`https://firebasestorage.googleapis.com/v0/b/inarr-99f89.firebasestorage.app/o/${stimulus}.png?alt=media&token=e78401f1-1770-4a03-af8b-527659666f7f`} />
                 <p>How would you rate this character on the following trait: <strong id='trait-id'> {trait}</strong>?</p>
                 <p id="definition-id">({definition})</p>
                     <RadioGroup className="radio-group" row aria-labelledby="demo-radio-buttons-group-label" value={rating} onChange={e => setRating(e.target.value)}>
