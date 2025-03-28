@@ -48,7 +48,7 @@ export const Experiment = ( { pageEvent, stimulus, version, trait, definition, d
 
     return (
         <div>
-            <progress value={clip+1} max={25}/>
+            <progress value={clip} max={25}/>
             { !playVideo &&
                 <>
                     <Ratings stimulus={stimulus} trait={trait} definition={definition} rating={rating} setRating={setRating} />
