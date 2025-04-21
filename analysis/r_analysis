@@ -1,0 +1,30 @@
+library(lmerTest)
+library(dplyr)
+library(purrr)
+
+setwd("/Volumes/Scraplab/lindseytepfer/inarr/univariate_parcels/averaged")
+output_dir <- "/Volumes/rc/lab/S/Scraplab/lindseytepfer/inarr/univariate_parcels/results"
+
+file_list <- list.files(pattern = "parcel_\\d+\\.csv", full.names = FALSE) 
+
+results_df <- map_dfr(file_list, function(file) {
+  parcel_data <- read.csv(file)
+
+  model <- lmer(avg_column ~ silenced + (1+silenced|sub) + (1+silenced|clip*movie), 
+               data = parcel_data)
+  
+  print(summary(model))
+  
+  coefs <- summary(model)$coefficients
+  
+  data.frame(
+    parcel = gsub("parcel_|\\.csv", "", file),
+    t_value = coefs["silenced", "t value"],
+    p_value = coefs["silenced", "Pr(>|t|)"],
+    stringsAsFactors = FALSE
+  )
+})
+
+# Save all results to a single CSV
+output_file <- file.path(output_dir, "all_parcel_results.csv")
+write.csv(results_df, file = output_file, row.names = FALSE)
