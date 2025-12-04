@@ -1,30 +1,27 @@
 library(lmerTest)
 library(dplyr)
-library(purrr)
 
-setwd("/Volumes/Scraplab/lindseytepfer/inarr/univariate_parcels/averaged")
-output_dir <- "/Volumes/rc/lab/S/Scraplab/lindseytepfer/inarr/univariate_parcels/results"
+dataset <- read.csv('/Volumes/Scraplab/lindseytepfer/inarr/univariate_parcels/univariate_parcel_dataframe.csv')
 
-file_list <- list.files(pattern = "parcel_\\d+\\.csv", full.names = FALSE) 
+results_df <- data.frame(parcel = numeric(),stringsAsFactors = FALSE)
 
-results_df <- map_dfr(file_list, function(file) {
-  parcel_data <- read.csv(file)
+for (i in 0:399) {
 
-  model <- lmer(avg_column ~ silenced + (1+silenced|sub) + (1+silenced|clip*movie), 
-               data = parcel_data)
+  filtered_parcel <- filter(dataset, parcel == i)
   
-  print(summary(model))
+  model <- lmer(avg_column ~ silenced + (1 | sub) + (1 | clip:movie),
+   data=filtered_parcel)
   
   coefs <- summary(model)$coefficients
-  
-  data.frame(
-    parcel = gsub("parcel_|\\.csv", "", file),
-    t_value = coefs["silenced", "t value"],
-    p_value = coefs["silenced", "Pr(>|t|)"],
+
+  silenced_row <- coefs["silenced", ]
+
+  new_row <- data.frame(
+    t_value = silenced_row["t value"],
     stringsAsFactors = FALSE
   )
-})
 
-# Save all results to a single CSV
-output_file <- file.path(output_dir, "all_parcel_results.csv")
-write.csv(results_df, file = output_file, row.names = FALSE)
+  results_df <- rbind(results_df, new_row)
+}
+
+write.csv(results_df, "/Users/lindseytepfer/Documents/phd/inarr/analysis/outputs/uncorrected_tvalues.csv", row.names = FALSE)
